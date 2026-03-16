@@ -8,14 +8,25 @@
 </head>
 <body>
 
-<div class="meeting-container">
+<!-- Incoming Call Screen -->
+<div id="call-screen" class="card">
+  <div class="avatar-ring">
+    <img src="avatar.png" alt="John">
+  </div>
+  <h2>Incoming AI Interview</h2>
+  <p>HR is calling...</p>
+  <button onclick="acceptCall()">Accept</button>
+</div>
+
+<!-- Teams-style Meeting Container -->
+<div class="meeting-container" style="display:none;">
 
   <!-- Top bar -->
   <div class="top-bar">
     <span>AI Interview Call</span>
   </div>
 
-  <!-- Participants -->
+  <!-- Participants row -->
   <div class="participants">
     <!-- HR placeholder -->
     <div class="participant">
