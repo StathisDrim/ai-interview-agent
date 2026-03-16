@@ -14,7 +14,7 @@ function sendMessage(){
 
   // Mock AI answer
   let response = "Thanks for your question! I will answer here soon.";
-  chatbox.innerHTML += `<p><b>John:</b> ${response}</p>`;
+  chatbox.innerHTML += `<p><b>Stathis:</b> ${response}</p>`;
 
   document.getElementById("question").value = "";
   chatbox.scrollTop = chatbox.scrollHeight;
