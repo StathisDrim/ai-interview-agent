@@ -1,3 +1,8 @@
+function acceptCall() {
+  document.getElementById("call-screen").style.display = "none";
+  document.querySelector(".meeting-container").style.display = "flex";
+}
+
 function sendMessage(){
   let question = document.getElementById("question").value;
   if(!question) return;
