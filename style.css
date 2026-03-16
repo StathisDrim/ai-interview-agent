@@ -9,7 +9,56 @@ body {
   margin:0;
 }
 
-/* Container */
+/* ---------------- Incoming Call Card ---------------- */
+#call-screen {
+  width: 320px;
+  background:white;
+  border-radius:25px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.08);
+  text-align:center;
+  padding:30px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:15px;
+}
+
+/* Avatar ring with pulse animation */
+.avatar-ring {
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  overflow:hidden;
+  position:relative;
+  animation: pulse 1.5s infinite;
+}
+
+.avatar-ring img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Ring pulse animation */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.7); }
+  70% { box-shadow: 0 0 0 20px rgba(59,130,246,0); }
+  100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+}
+
+#call-screen button {
+  background:black;
+  color:white;
+  border:none;
+  padding:12px 26px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+#call-screen button:hover { opacity:0.8; }
+
+/* ---------------- Meeting Container ---------------- */
 .meeting-container {
   width: 500px;
   background:white;
@@ -102,6 +151,10 @@ input {
   border-radius:20px;
   border:1px solid #ddd;
   outline:none;
+}
+
+input:focus {
+  border-color: #3b82f6;
 }
 
 button {
