@@ -1,171 +1,128 @@
-/* Body */
-body {
-  font-family: 'Inter', sans-serif;
-  background:#f5f5f7;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
+body{
+font-family:'Inter',sans-serif;
+background:#f2f2f2;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
 }
 
-/* ---------------- Incoming Call Card ---------------- */
-#call-screen {
-  width: 320px;
-  background:white;
-  border-radius:25px;
-  box-shadow:0 20px 40px rgba(0,0,0,0.08);
-  text-align:center;
-  padding:30px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:15px;
+/* MAIN BOX */
+.app-box{
+width:700px;
+height:500px;
+background:white;
+border:1px solid #ddd;
+display:flex;
+flex-direction:column;
 }
 
-/* Avatar ring with pulse animation */
-.avatar-ring {
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  overflow:hidden;
-  position:relative;
-  animation: pulse 1.5s infinite;
+/* ---------------- CALL SCREEN ---------------- */
+
+#call-screen{
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:15px;
 }
 
-.avatar-ring img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.avatar-ring{
+width:100px;
+height:100px;
+border-radius:50%;
+overflow:hidden;
+animation:pulse 1.5s infinite;
 }
 
-/* Ring pulse animation */
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.7); }
-  70% { box-shadow: 0 0 0 20px rgba(59,130,246,0); }
-  100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+.avatar-ring img{
+width:100%;
+height:100%;
+object-fit:cover;
 }
 
-#call-screen button {
-  background:black;
-  color:white;
-  border:none;
-  padding:12px 26px;
-  border-radius:30px;
-  cursor:pointer;
-  font-size:14px;
+@keyframes pulse{
+0%{box-shadow:0 0 0 0 rgba(0,120,255,0.6);}
+70%{box-shadow:0 0 0 25px rgba(0,120,255,0);}
+100%{box-shadow:0 0 0 0 rgba(0,120,255,0);}
 }
 
-#call-screen button:hover { opacity:0.8; }
-
-/* ---------------- Meeting Container ---------------- */
-.meeting-container {
-  width: 500px;
-  background:white;
-  border-radius:25px;
-  box-shadow:0 20px 40px rgba(0,0,0,0.08);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+button{
+padding:10px 20px;
+border:none;
+background:black;
+color:white;
+cursor:pointer;
 }
 
-/* Top bar */
-.top-bar {
-  background:#f0f0f3;
-  padding:15px;
-  font-weight:500;
-  text-align:center;
-  border-bottom:1px solid #eee;
+button:hover{
+opacity:0.8;
 }
 
-/* Participants row */
-.participants {
-  display:flex;
-  justify-content:space-around;
-  padding:20px;
-  gap:20px;
+/* ---------------- MEETING SCREEN ---------------- */
+
+#meeting-screen{
+display:none;
+flex-direction:column;
+height:100%;
 }
 
-/* Individual participant */
-.participant {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+/* video row */
+
+.videos{
+display:flex;
+justify-content:center;
+gap:20px;
+padding:20px;
+border-bottom:1px solid #eee;
 }
 
-/* Avatar */
-.avatar {
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  overflow:hidden;
-  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+.video-box{
+width:220px;
+height:150px;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+overflow:hidden;
 }
 
-.avatar img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.video-box img{
+width:100%;
+height:100%;
+object-fit:cover;
 }
 
-/* Placeholder HR avatar */
-.avatar.placeholder {
-  background:#e0e0e0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:30px;
-  color:#888;
+.placeholder{
+font-size:20px;
+opacity:0.8;
 }
 
-/* Name */
-.name {
-  margin-top:10px;
-  font-weight:500;
+/* chat */
+
+.chat-container{
+flex:1;
+display:flex;
+flex-direction:column;
 }
 
-/* Chatbox */
-.chat-container {
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  border-top:1px solid #eee;
+#chatbox{
+flex:1;
+padding:10px;
+overflow:auto;
 }
 
-#chatbox {
-  flex:1;
-  padding:15px;
-  overflow:auto;
+.input-area{
+display:flex;
+border-top:1px solid #eee;
 }
 
-.input-area {
-  display:flex;
-  padding:10px;
-  gap:10px;
-  border-top:1px solid #eee;
-}
-
-input {
-  flex:1;
-  padding:10px;
-  border-radius:20px;
-  border:1px solid #ddd;
-  outline:none;
-}
-
-input:focus {
-  border-color: #3b82f6;
-}
-
-button {
-  background:black;
-  color:white;
-  border:none;
-  border-radius:20px;
-  padding:10px 20px;
-  cursor:pointer;
-}
-
-button:hover {
-  opacity:0.8;
+input{
+flex:1;
+padding:10px;
+border:none;
+outline:none;
 }
