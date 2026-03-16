@@ -1,1 +1,39 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI Interview Agent</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Incoming Call Screen -->
+<div id="call-screen" class="card">
+  <div class="avatar-ring">
+    <img src="avatar.png">
+  </div>
+  <h2>AI Interview</h2>
+  <p>John's AI assistant is inviting you to a conversation</p>
+  <button onclick="acceptCall()">Accept</button>
+</div>
+
+<!-- Chat Screen -->
+<div id="chat-screen" class="chat-container">
+  <div class="top-bar">
+    <img src="avatar.png">
+    <span>AI Assistant</span>
+  </div>
+
+  <div id="chatbox"></div>
+
+  <div class="input-area">
+    <input id="question" placeholder="Ask something about John...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
