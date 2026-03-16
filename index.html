@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>AI Interview Call</title>
+
 <link rel="stylesheet" href="style.css">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
+<div class="meeting-frame">
+
 <div class="app-box">
 
 <!-- CALL SCREEN -->
+
 <div id="call-screen">
 
 <div class="avatar-ring">
@@ -19,34 +26,44 @@
 </div>
 
 <h2>AI Interview</h2>
-<p>Connecting call...</p>
+<p>Incoming call...</p>
 
 <button onclick="acceptCall()">Accept Call</button>
 
 </div>
 
+
 <!-- MEETING SCREEN -->
+
 <div id="meeting-screen">
 
 <div class="videos">
 
 <div class="video-box">
 <div class="placeholder">HR</div>
+<div class="video-name">AI HR</div>
 </div>
 
 <div class="video-box">
 <img src="avatar.png">
+<div class="video-name">Stathis</div>
 </div>
 
 </div>
+
 
 <div class="chat-container">
 
 <div id="chatbox"></div>
 
 <div class="input-area">
-<input id="question" placeholder="Ask something...">
+
+<input id="question" placeholder="Type your answer...">
+
 <button onclick="sendMessage()">Send</button>
+
+</div>
+
 </div>
 
 </div>
