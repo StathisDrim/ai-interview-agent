@@ -6,56 +6,56 @@
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- Incoming Call Screen -->
-<div id="call-screen" class="card">
-  <div class="avatar-ring">
-    <img src="avatar.png" alt="John">
-  </div>
-  <h2>Incoming AI Interview</h2>
-  <p>HR is calling...</p>
-  <button onclick="acceptCall()">Accept</button>
+<div class="app-box">
+
+<!-- CALL SCREEN -->
+<div id="call-screen">
+
+<div class="avatar-ring">
+<img src="avatar.png">
 </div>
 
-<!-- Teams-style Meeting Container -->
-<div class="meeting-container" style="display:none;">
+<h2>AI Interview</h2>
+<p>Connecting call...</p>
 
-  <!-- Top bar -->
-  <div class="top-bar">
-    <span>AI Interview Call</span>
-  </div>
+<button onclick="acceptCall()">Accept Call</button>
 
-  <!-- Participants row -->
-  <div class="participants">
-    <!-- HR placeholder -->
-    <div class="participant">
-      <div class="avatar placeholder">
-        <span>📷</span>
-      </div>
-      <div class="name">HR</div>
-    </div>
+</div>
 
-    <!-- Your avatar -->
-    <div class="participant">
-      <div class="avatar">
-        <img src="avatar.png" alt="Stathis">
-      </div>
-      <div class="name">Stathis</div>
-    </div>
-  </div>
+<!-- MEETING SCREEN -->
+<div id="meeting-screen">
 
-  <!-- Chatbox -->
-  <div class="chat-container">
-    <div id="chatbox"></div>
-    <div class="input-area">
-      <input id="question" placeholder="Ask something..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
+<div class="videos">
+
+<div class="video-box">
+<div class="placeholder">HR</div>
+</div>
+
+<div class="video-box">
+<img src="avatar.png">
+</div>
+
+</div>
+
+<div class="chat-container">
+
+<div id="chatbox"></div>
+
+<div class="input-area">
+<input id="question" placeholder="Ask something...">
+<button onclick="sendMessage()">Send</button>
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
