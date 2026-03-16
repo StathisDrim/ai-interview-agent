@@ -1,37 +1,48 @@
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>AI Interview Agent</title>
+<title>AI Interview Call</title>
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- Incoming Call Screen -->
-<div id="call-screen" class="card">
-  <div class="avatar-ring">
-    <img src="avatar.png">
-  </div>
-  <h2>AI Interview</h2>
-  <p>John's AI assistant is inviting you to a conversation</p>
-  <button onclick="acceptCall()">Accept</button>
-</div>
+<div class="meeting-container">
 
-<!-- Chat Screen -->
-<div id="chat-screen" class="chat-container">
+  <!-- Top bar -->
   <div class="top-bar">
-    <img src="avatar.png">
-    <span>AI Assistant</span>
+    <span>AI Interview Call</span>
   </div>
 
-  <div id="chatbox"></div>
+  <!-- Participants -->
+  <div class="participants">
+    <!-- HR placeholder -->
+    <div class="participant">
+      <div class="avatar placeholder">
+        <span>📷</span>
+      </div>
+      <div class="name">HR</div>
+    </div>
 
-  <div class="input-area">
-    <input id="question" placeholder="Ask something about John...">
-    <button onclick="sendMessage()">Send</button>
+    <!-- Your avatar -->
+    <div class="participant">
+      <div class="avatar">
+        <img src="avatar.png" alt="John">
+      </div>
+      <div class="name">John</div>
+    </div>
   </div>
+
+  <!-- Chatbox -->
+  <div class="chat-container">
+    <div id="chatbox"></div>
+    <div class="input-area">
+      <input id="question" placeholder="Ask something..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
 </div>
 
 <script src="script.js"></script>
