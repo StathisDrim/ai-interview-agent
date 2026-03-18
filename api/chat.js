@@ -6,7 +6,8 @@ export default async function handler(req, res) {
     }
 
     try {
-        const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct", {
+        // Χρησιμοποιούμε το ΝΕΟ URL (router αντί για api-inference)
+        const response = await fetch("https://router.huggingface.co/hf-inference/models/meta-llama/Meta-Llama-3-8B-Instruct", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${HF_TOKEN}`,
@@ -16,12 +17,6 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        
-        // Αν το Hugging Face στείλει σφάλμα, το στέλνουμε στο frontend
-        if (!response.ok) {
-            return res.status(response.status).json(data);
-        }
-
         return res.status(200).json(data);
     } catch (error) {
         return res.status(500).json({ error: "Server Error: " + error.message });
