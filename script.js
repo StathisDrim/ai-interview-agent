@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     declineBtn.addEventListener('click', () => {
-        window.location.href = "https://www.linkedin.com"; // Ή όπου αλλού θες
+        window.location.href = "https://www.linkedin.com/in/stathis-drimilis-743015112/"; // Το LinkedIn σου
     });
 
     // 2. ΛΕΙΤΟΥΡΓΙΑ CHAT
@@ -31,22 +31,30 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
 
         try {
-            // ΚΑΛΟΥΜΕ ΤΟ API ΜΑΣ ΣΤΟ VERCEL
-            const response = await fetch('/api/chat', {
+            // ΚΑΛΟΥΜΕ ΤΟ API (το Vercel θα βρει αυτόματα το api/index.js)
+            const response = await fetch('/api', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: text })
             });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Server Error:", errorText);
+                appendMessage('ai', "Σφάλμα διακομιστή. Δοκίμασε πάλι αργότερα.");
+                return;
+            }
 
             const data = await response.json();
             
             if (data.reply) {
                 typeWriter(data.reply);
             } else {
-                appendMessage('ai', "Κάτι πήγε στραβά στην απάντηση.");
+                appendMessage('ai', "Δεν έλαβα έγκυρη απάντηση.");
             }
         } catch (error) {
-            appendMessage('ai', "Σφάλμα σύνδεσης. Δοκίμασε πάλι!");
+            console.error("Fetch Error:", error);
+            appendMessage('ai', "Αποτυχία σύνδεσης. Βεβαιώσου ότι είσαι στο link του Vercel.");
         }
     }
 
@@ -67,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatLog.appendChild(bubble);
         
         let i = 0;
-        const speed = 30; // Ταχύτητα σε milliseconds
+        const speed = 25; // Ταχύτητα γραφής
 
         function type() {
             if (i < text.length) {
