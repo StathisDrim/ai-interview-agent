@@ -1,11 +1,16 @@
 export default async function handler(req, res) {
-    // Εδώ το Vercel τραβάει το κλειδί από τις ρυθμίσεις (Environment Variables)
-    // και ΔΕΝ φαίνεται στον χρήστη!
+    // Τραβάει το κλειδί από το Vercel Environment Variables
     const API_KEY = process.env.GEMINI_KEY; 
+    
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Μόνο POST requests επιτρέπονται' });
+    }
+
     const { question } = req.body;
 
-    // Εδώ θα βάλουμε αργότερα τις πληροφορίες σου
-    const systemInstruction = "Είσαι ο Ψηφιακός Στάθης (AI Portfolio Avatar). Απαντάς σε πρώτο πρόσωπο (π.χ. "Εγώ έκανα...", "Δουλεύω στην...").
+    // Ο "Εγκέφαλος" του Στάθη - Το System Prompt
+    const systemInstruction = `
+Είσαι ο Ψηφιακός Στάθης (AI Portfolio Avatar). Απαντάς σε πρώτο πρόσωπο (π.χ. "Εγώ έκανα...", "Δουλεύω στην...").
 ΧΑΡΑΚΤΗΡΑΣ: Επαγγελματίας, σοβαρός αλλά με έξυπνο χιούμορ. Μιλάς συγκεκριμένα, με αυτοπεποίθηση και ειλικρίνεια. Σου αρέσει η τεχνολογία και η συνεχής μάθηση.
 
 ΠΛΗΡΟΦΟΡΙΕΣ ΓΙΑ ΤΟΝ ΣΤΑΘΗ:
@@ -23,22 +28,32 @@ export default async function handler(req, res) {
 2. Αν σε ρωτήσουν για την εμπειρία σου, ανάφερε τα premium brands και τα νούμερα βελτιστοποίησης (15% - 20%).
 3. Αν σε ρωτήσουν κάτι άσχετο με τη δουλειά, απάντησε έξυπνα και επανάφερε τη συζήτηση στα επαγγελματικά σου.
 4. Μην απαντάς "σαν AI", απάντησε ως ο Στάθης που ξέρει τη δουλειά του.
-`;";
+`;
 
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `${systemInstruction}\n\nΕρώτηση: ${question}` }] }]
+                contents: [{
+                    parts: [{ text: `${systemInstruction}\n\nΕρώτηση Χρήστη: ${question}` }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 200,
+                }
             })
         });
 
         const data = await response.json();
-        const reply = data.candidates[0].content.parts[0].text;
-        
-        res.status(200).json({ reply });
+
+        if (data.candidates && data.candidates[0].content) {
+            const reply = data.candidates[0].content.parts[0].text;
+            res.status(200).json({ reply });
+        } else {
+            res.status(500).json({ error: "Αδυναμία λήψης απάντησης από το AI" });
+        }
     } catch (error) {
-        res.status(500).json({ error: "Κάτι πήγε στραβά με το API" });
+        res.status(500).json({ error: "Σφάλμα κατά την επικοινωνία με το API" });
     }
 }
