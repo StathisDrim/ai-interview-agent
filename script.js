@@ -1,15 +1,3 @@
-async function askGemini(question) {
-    // Καλούμε το δικό μας API στο Vercel, όχι απευθείας την Google
-    const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: question })
-    });
-    
-    const data = await response.json();
-    return data.reply;
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const callScreen = document.getElementById('call-screen');
     const chatScreen = document.getElementById('chat-screen');
@@ -25,11 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     acceptBtn.addEventListener('click', () => {
         callScreen.classList.add('hidden');
         chatScreen.classList.remove('hidden');
-        if (liveVideo) liveVideo.play();
+        if (liveVideo) {
+            liveVideo.play().catch(e => console.log("Video play failed", e));
+        }
     });
 
     declineBtn.addEventListener('click', () => {
-        document.body.innerHTML = `<div style="text-align:center; margin-top:20vh; color:white;"><h1>Η κλήση τερματίστηκε.</h1><button onclick="location.reload()">Επαναφορά</button></div>`;
+        window.location.href = "https://www.linkedin.com"; // Ή όπου αλλού θες
     });
 
     // 2. ΛΕΙΤΟΥΡΓΙΑ CHAT
@@ -37,16 +27,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = userInput.value.trim();
         if (!text) return;
 
-        // Εμφάνιση μηνύματος χρήστη
         appendMessage('user', text);
         userInput.value = '';
 
-        // Κλήση στο Gemini
         try {
-            const aiResponse = await askGemini(text);
-            appendMessage('ai', aiResponse);
+            // ΚΑΛΟΥΜΕ ΤΟ API ΜΑΣ ΣΤΟ VERCEL
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: text })
+            });
+
+            const data = await response.json();
+            
+            if (data.reply) {
+                typeWriter(data.reply);
+            } else {
+                appendMessage('ai', "Κάτι πήγε στραβά στην απάντηση.");
+            }
         } catch (error) {
-            appendMessage('ai', "Σόρι, έχω ένα μικρό πρόβλημα στη σύνδεση. Ξαναδοκίμασε!");
+            appendMessage('ai', "Σφάλμα σύνδεσης. Δοκίμασε πάλι!");
         }
     }
 
@@ -58,25 +58,25 @@ document.addEventListener('DOMContentLoaded', () => {
         bubble.className = sender === 'user' ? 'user-bubble' : 'ai-bubble';
         bubble.innerText = text;
         chatLog.appendChild(bubble);
-        chatLog.scrollTop = chatLog.scrollHeight; // Scroll στο τέλος
+        chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    // 3. ΣΥΝΔΕΣΗ ΜΕ GEMINI API
-    async function askGemini(question) {
-        // Εδώ ορίζεις ποιος είσαι!
-        const systemInstruction = "Είσαι ο Στάθης. Είσαι προγραμματιστής, 25 χρονών, ειδικός σε React και Node.js. Δουλεύεις στην εταιρεία X. Απάντα πάντα σε πρώτο πρόσωπο, φιλικά και επαγγελματικά.";
+    function typeWriter(text) {
+        const bubble = document.createElement('div');
+        bubble.className = 'ai-bubble';
+        chatLog.appendChild(bubble);
+        
+        let i = 0;
+        const speed = 30; // Ταχύτητα σε milliseconds
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: `${systemInstruction}\n\nΕρώτηση χρήστη: ${question}` }]
-                }]
-            })
-        });
-
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        function type() {
+            if (i < text.length) {
+                bubble.innerText += text.charAt(i);
+                i++;
+                chatLog.scrollTop = chatLog.scrollHeight;
+                setTimeout(type, speed);
+            }
+        }
+        type();
     }
 });
