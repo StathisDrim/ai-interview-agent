@@ -1,24 +1,27 @@
 export default async function handler(req, res) {
-    // 1. ΡΥΘΜΙΣΗ CORS ΓΙΑ ΝΑ ΕΠΙΤΡΕΠΕΤΑΙ ΤΟ GITHUB
+    // Headers για CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Επιτρέπει σε όλα τα sites να σε καλούν
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
     res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
 
-    // Χειρισμός του Preflight request (OPTIONS)
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
+    }
+
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Μόνο POST επιτρέπεται' });
     }
 
     const HF_TOKEN = process.env.HF_TOKEN;
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+    
+    // Έλεγχος αν υπάρχει το κλειδί
+    if (!HF_TOKEN) {
+        return res.status(500).json({ error: "Λείπει το HF_TOKEN από το Vercel Environment Variables" });
     }
 
     try {
-        const response = await fetch("https://router.huggingface.co/hf-inference/models/meta-llama/Meta-Llama-3-8B-Instruct", {
+        const hfResponse = await fetch("https://router.huggingface.co/hf-inference/models/meta-llama/Meta-Llama-3-8B-Instruct", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${HF_TOKEN}`,
@@ -27,9 +30,15 @@ export default async function handler(req, res) {
             body: JSON.stringify(req.body),
         });
 
-        const data = await response.json();
+        const data = await hfResponse.json();
+
+        if (!hfResponse.ok) {
+            return res.status(hfResponse.status).json({ error: "Hugging Face Error", details: data });
+        }
+
         return res.status(200).json(data);
+
     } catch (error) {
-        return res.status(500).json({ error: "Server Error: " + error.message });
+        return res.status(500).json({ error: "Server Error", message: error.message });
     }
 }
