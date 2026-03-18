@@ -32,10 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // ΚΑΛΟΥΜΕ ΤΟ API (το Vercel θα βρει αυτόματα το api/index.js)
-            const response = await fetch('/api', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: text })
+            const response = await fetch('/api/index.js', { 
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ question: text })
             });
 
             if (!response.ok) {
