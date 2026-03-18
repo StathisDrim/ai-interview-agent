@@ -1,78 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ΣΠΑΜΕ ΤΟ ΚΛΕΙΔΙ ΓΙΑ ΝΑ ΜΗΝ ΤΟ ΠΙΑΝΕΙ ΤΟ ΣΚΑΝΑΡΙΣΜΑ ΤΟΥ GITHUB
-    // ΑΝΤΙΚΑΤΑΣΤΗΣΕ ΤΑ ΠΑΡΑΚΑΤΩ ΜΕ ΤΟ ΝΕΟ ΣΟΥ TOKEN
-    const p1 = "hf_JYaYqDzMbVkXMVy"; // Βάλε εδώ το πρώτο μισό του νέου σου token
-    const p2 = "ZkXSDGulbXxlpgtbUJW"; // Βάλε εδώ το δεύτερο μισό
-    const HF_TOKEN = p1 + p2;
-
-    const API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct";
-
+    // ΣΤΟΙΧΕΙΑ UI
+    const callScreen = document.getElementById('call-screen');
+    const chatScreen = document.getElementById('chat-screen');
     const acceptBtn = document.getElementById('accept-btn');
     const sendBtn = document.getElementById('send-btn');
     const userInput = document.getElementById('user-input');
     const chatLog = document.getElementById('chat-log');
 
+    // 1. ΕΝΑΛΛΑΓΗ ΟΘΟΝΩΝ (ΑΠΟ ΚΛΗΣΗ ΣΕ CHAT)
     if (acceptBtn) {
         acceptBtn.addEventListener('click', () => {
-            document.getElementById('call-screen').classList.add('hidden');
-            document.getElementById('chat-screen').classList.remove('hidden');
+            callScreen.classList.add('hidden');
+            chatScreen.classList.remove('hidden');
+            // Μικρό καλωσόρισμα από τον Στάθη
+            setTimeout(() => {
+                appendMessage('ai', "Γεια! Είμαι ο Στάθης. Πώς μπορώ να σε βοηθήσω σήμερα;");
+            }, 500);
         });
     }
 
+    // 2. ΛΕΙΤΟΥΡΓΙΑ ΑΠΟΣΤΟΛΗΣ ΜΗΝΥΜΑΤΟΣ
     async function handleSend() {
         const text = userInput.value.trim();
         if (!text) return;
 
+        // Εμφάνιση μηνύματος χρήστη
         appendMessage('user', text);
         userInput.value = '';
 
         try {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${HF_TOKEN}`,
-                    "Content-Type": "application/json",
-                },
+            // ΚΑΛΟΥΜΕ ΤΟ ΔΙΚΟ ΜΑΣ API ΣΤΟ VERCEL (ΟΧΙ ΤΟ HUGGING FACE ΑΠΕΥΘΕΙΑΣ)
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    inputs: `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nΕίσαι ο Στάθης (15/12/1992), Warehouse Specialist. Απάντα σύντομα στα ελληνικά.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n${text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`,
+                    inputs: `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nΕίσαι ο Στάθης (Warehouse Specialist). Απάντα σύντομα, φιλικά και επαγγελματικά στα ελληνικά.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n${text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`,
                     parameters: { max_new_tokens: 150, return_full_text: false }
-                }),
+                })
             });
 
             const result = await response.json();
 
-            // Έλεγχος αν το μοντέλο φορτώνει (συνηθισμένο στο δωρεάν Hugging Face)
-            if (result.estimated_time) {
-                appendMessage('ai', `Περίμενε ${Math.round(result.estimated_time)} δευτερόλεπτα να προετοιμαστώ...`);
+            // Έλεγχος αν το μοντέλο φορτώνει (πρώτη φορά)
+            if (result.error && result.estimated_time) {
+                appendMessage('ai', "Μισό λεπτό να ετοιμαστώ (το σύστημα φορτώνει)...");
                 return;
             }
 
             if (result && result[0] && result[0].generated_text) {
-                let reply = result[0].generated_text.trim();
-                appendMessage('ai', reply);
+                appendMessage('ai', result[0].generated_text.trim());
+            } else if (result.error) {
+                appendMessage('ai', "Σφάλμα API: " + result.error);
             } else {
-                appendMessage('ai', "Κάτι πήγε στραβά, ξαναδοκίμασε σε λίγο.");
+                appendMessage('ai', "Δεν πήρα απάντηση, δοκίμασε πάλι.");
             }
-        } catch (e) {
-            appendMessage('ai', "Σφάλμα σύνδεσης. Δοκίμασε ξανά.");
-            console.error(e);
+
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            appendMessage('ai', "Σφάλμα σύνδεσης. Βεβαιώσου ότι το Vercel API είναι live.");
         }
     }
 
+    // 3. ΣΥΝΑΡΤΗΣΗ ΕΜΦΑΝΙΣΗΣ ΜΗΝΥΜΑΤΩΝ
     function appendMessage(sender, text) {
-        const div = document.createElement('div');
-        div.className = sender === 'user' ? 'user-bubble' : 'ai-bubble';
-        div.style.margin = "10px";
-        div.style.padding = "10px";
-        div.style.borderRadius = "10px";
-        div.style.backgroundColor = sender === 'user' ? "#007bff" : "#f1f1f1";
-        div.style.color = sender === 'user' ? "white" : "black";
-        div.style.alignSelf = sender === 'user' ? "flex-end" : "flex-start";
-        div.innerText = (sender === 'user' ? "Εσύ: " : "Στάθης: ") + text;
-        chatLog.appendChild(div);
-        chatLog.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        const bubble = document.createElement('div');
+        bubble.className = sender === 'user' ? 'user-bubble' : 'ai-bubble';
+        
+        // Βασικό styling αν δεν έχεις CSS
+        bubble.style.padding = "10px";
+        bubble.style.margin = "8px";
+        bubble.style.borderRadius = "12px";
+        bubble.style.maxWidth = "80%";
+        bubble.style.wordWrap = "break-word";
+        bubble.style.display = "block";
+        
+        if (sender === 'user') {
+            bubble.style.backgroundColor = "#007bff";
+            bubble.style.color = "white";
+            bubble.style.marginLeft = "auto";
+            bubble.innerText = "Εσύ: " + text;
+        } else {
+            bubble.style.backgroundColor = "#e9e9eb";
+            bubble.style.color = "black";
+            bubble.style.marginRight = "auto";
+            bubble.innerText = "Στάθης: " + text;
+        }
+
+        chatLog.appendChild(bubble);
+        chatLog.scrollTop = chatLog.scrollHeight;
     }
 
+    // 4. EVENT LISTENERS ΓΙΑ ΚΟΥΜΠΙΑ ΚΑΙ ENTER
     if (sendBtn) sendBtn.addEventListener('click', handleSend);
     if (userInput) {
         userInput.addEventListener('keypress', (e) => {
