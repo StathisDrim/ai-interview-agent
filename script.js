@@ -1,4 +1,4 @@
-const API_KEY = "YOUR_GEMINI_API_KEY"; // Θα το κρύψουμε στο Vercel μετά!
+const API_KEY = "AIzaSyDfv2o3AYk1ywgCny1EHyD5AkXxJ94t9OM"; // Θα το κρύψουμε στο Vercel μετά!
 
 document.addEventListener('DOMContentLoaded', () => {
     const callScreen = document.getElementById('call-screen');
