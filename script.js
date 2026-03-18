@@ -1,44 +1,34 @@
-function acceptCall(){
+document.addEventListener('DOMContentLoaded', () => {
+    const callScreen = document.getElementById('call-screen');
+    const chatScreen = document.getElementById('chat-screen');
+    const acceptBtn = document.getElementById('accept-btn');
+    const declineBtn = document.getElementById('decline-btn');
+    const liveVideo = document.getElementById('live-video');
 
-document.getElementById("call-screen").style.display="none";
+    // Λογική για το "Σήκωμα" της κλήσης
+    acceptBtn.addEventListener('click', () => {
+        // Κρύβουμε την οθόνη κλήσης και δείχνουμε το chat
+        callScreen.classList.add('hidden');
+        chatScreen.classList.remove('hidden');
 
-document.getElementById("meeting-screen").style.display="flex";
+        // Ξεκινάμε το βίντεο (loop)
+        if (liveVideo) {
+            liveVideo.play().catch(error => {
+                console.log("Το βίντεο δεν ξεκίνησε αυτόματα (auto-play policy):", error);
+            });
+        }
+    });
 
-startInterview();
-
-}
-
-
-
-function startInterview(){
-
-let chatbox=document.getElementById("chatbox");
-
-chatbox.innerHTML+=`
-<p><b>AI HR:</b> Hello Stathis, welcome to your AI interview.</p>
-<p><b>AI HR:</b> Tell me a little about yourself.</p>
-`;
-
-}
-
-
-
-function sendMessage(){
-
-let question=document.getElementById("question").value;
-
-if(!question) return;
-
-let chatbox=document.getElementById("chatbox");
-
-chatbox.innerHTML+=`<p><b>Stathis:</b> ${question}</p>`;
-
-let response="Thank you for your answer. Let's continue the interview.";
-
-chatbox.innerHTML+=`<p><b>AI HR:</b> ${response}</p>`;
-
-document.getElementById("question").value="";
-
-chatbox.scrollTop=chatbox.scrollHeight;
-
-}
+    // Λογική για το "Κλείσιμο" (Decline)
+    declineBtn.addEventListener('click', () => {
+        // Στους browsers δεν μπορούμε να κλείσουμε το tab.
+        // Θα δείξουμε ένα μήνυμα ή θα κάνουμε redirect.
+        document.body.innerHTML = `
+            <div style="text-align:center; padding:100px; color:#aaa; font-family:sans-serif;">
+                <h1>Η κλήση τερματίστηκε.</h1>
+                <p>Ευχαριστούμε που επισκεφθήκατε το AI Portfolio του Στάθη.</p>
+                <a href="#" onclick="window.location.reload()" style="color:#4cd964; text-decoration:none;">Δοκιμάστε ξανά</a>
+            </div>
+        `;
+    });
+});
