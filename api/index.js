@@ -16,12 +16,9 @@ module.exports = async (req, res) => {
 
     const options = {
         hostname: 'generativelanguage.googleapis.com',
-        // ΤΟ URL ΠΟΥ ΔΟΥΛΕΥΕΙ ΣΤΑ ΠΕΡΙΣΣΟΤΕΡΑ NEW PROJECTS:
         path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
     };
 
     const request = https.request(options, (response) => {
@@ -30,27 +27,16 @@ module.exports = async (req, res) => {
         response.on('end', () => {
             try {
                 const json = JSON.parse(data);
-                
-                if (json.error) {
-                    return res.status(200).json({ reply: `Σφάλμα Google (${json.error.code}): ${json.error.message}` });
-                }
-
                 if (json.candidates && json.candidates[0].content) {
-                    const reply = json.candidates[0].content.parts[0].text;
-                    res.status(200).json({ reply });
+                    res.status(200).json({ reply: json.candidates[0].content.parts[0].text });
                 } else {
-                    res.status(200).json({ reply: "Δεν βρέθηκε απάντηση. Δοκίμασε ξανά." });
+                    res.status(200).json({ reply: "Σφάλμα AI: " + (json.error ? json.error.message : "Πρόβλημα") });
                 }
-            } catch (e) {
-                res.status(200).json({ reply: "Σφάλμα λήψης: " + data });
-            }
+            } catch (e) { res.status(500).json({ error: "Parse Error" }); }
         });
     });
 
-    request.on('error', (e) => {
-        res.status(200).json({ reply: "Σφάλμα δικτύου: " + e.message });
-    });
-
+    request.on('error', (e) => { res.status(500).json({ error: e.message }); });
     request.write(postData);
     request.end();
 };
