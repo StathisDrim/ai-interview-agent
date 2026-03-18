@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. ΡΥΘΜΙΣΕΙΣ - Κατευθείαν στη Google
-    const API_KEY = "AIzaSyDc9cwD46Jc-C0cK9ZVlgg8b1pgBHGjzG0";
+    const API_KEY = "";
     const GOOGLE_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
     const callScreen = document.getElementById('call-screen');
