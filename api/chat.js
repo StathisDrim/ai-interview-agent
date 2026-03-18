@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     // Τραβάει το κλειδί από το Vercel Environment Variables
     const API_KEY = process.env.GEMINI_KEY; 
     
