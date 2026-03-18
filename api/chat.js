@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    // CORS HEADERS
+    // 1. CORS HEADERS (Για να επικοινωνεί το GitHub με το Vercel)
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -9,31 +9,41 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    // ΠΑΙΡΝΟΥΜΕ ΤΟ ΚΛΕΙΔΙ
-    const HF_TOKEN = process.env.HF_TOKEN;
-
-    // ΕΛΕΓΧΟΣ ΑΝ ΤΟ ΚΛΕΙΔΙ ΥΠΑΡΧΕΙ
-    if (!HF_TOKEN || HF_TOKEN === "") {
-        return res.status(500).json({ 
-            error: "Λείπει το HF_TOKEN!", 
-            details: "Πήγαινε στο Vercel Dashboard -> Settings -> Environment Variables και πρόσθεσε το HF_TOKEN." 
-        });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    const HF_TOKEN = process.env.HF_TOKEN;
+
     try {
-        const response = await fetch("https://router.huggingface.co/hf-inference/models/meta-llama/Meta-Llama-3-8B-Instruct", {
+        // Χρησιμοποιούμε το πιο σταθερό URL του Hugging Face
+        const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${HF_TOKEN}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(req.body),
+            body: JSON.stringify({
+                inputs: req.body.inputs,
+                parameters: { 
+                    max_new_tokens: 100,
+                    return_full_text: false,
+                    wait_for_model: true // SOS: Περιμένει το μοντέλο να φορτώσει αντί να πετάξει σφάλμα
+                }
+            }),
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            console.error("HF Error:", data);
+            return res.status(response.status).json(data);
+        }
+
         return res.status(200).json(data);
 
     } catch (error) {
+        console.error("Vercel Server Error:", error);
         return res.status(500).json({ error: "Server Error", message: error.message });
     }
 }
