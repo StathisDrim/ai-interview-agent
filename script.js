@@ -1,4 +1,14 @@
-const API_KEY = "AIzaSyDfv2o3AYk1ywgCny1EHyD5AkXxJ94t9OM"; // Θα το κρύψουμε στο Vercel μετά!
+async function askGemini(question) {
+    // Καλούμε το δικό μας API στο Vercel, όχι απευθείας την Google
+    const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: question })
+    });
+    
+    const data = await response.json();
+    return data.reply;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const callScreen = document.getElementById('call-screen');
