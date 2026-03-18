@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. ΡΥΘΜΙΣΕΙΣ (Βάλε το κλειδί σου εδώ)
-    const API_KEY = "AIzaSyDc9cwD46Jc-C0cK9ZVlgg8b1pgBHGjzG0"; 
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    const API_KEY = "AIzaSyDc9cwD46Jc-C0cK9ZVlgg8b1pgBHGjzG0";
+    // ΠΡΟΣΟΧΗ: Εδώ καλούμε ΚΑΤΕΥΘΕΙΑΝ τη Google, όχι το /api
+    const GOOGLE_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
     const callScreen = document.getElementById('call-screen');
     const chatScreen = document.getElementById('chat-screen');
@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendBtn = document.getElementById('send-btn');
     const chatLog = document.getElementById('chat-log');
 
-    // ΕΝΑΛΛΑΓΗ ΟΘΟΝΩΝ
     if (acceptBtn) {
         acceptBtn.addEventListener('click', () => {
             callScreen.classList.add('hidden');
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ΛΕΙΤΟΥΡΓΙΑ CHAT
     async function handleSend() {
         const text = userInput.value.trim();
         if (!text) return;
@@ -27,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDc9cwD46Jc-C0cK9ZVlgg8b1pgBHGjzG0`, {
+            // ΕΔΩ ΕΙΝΑΙ Η ΑΛΛΑΓΗ: Καλούμε το GOOGLE_URL
+            const response = await fetch(GOOGLE_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -41,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reply = data.candidates[0].content.parts[0].text;
                 typeWriter(reply);
             } else {
-                appendMessage('ai', "Σφάλμα AI: " + (data.error ? data.error.message : "Πρόβλημα σύνδεσης"));
+                appendMessage('ai', "Σφάλμα: " + (data.error ? data.error.message : "Πρόβλημα σύνδεσης"));
             }
         } catch (error) {
-            appendMessage('ai', "Σφάλμα συστήματος: " + error.message);
+            appendMessage('ai', "Σφάλμα: " + error.message);
         }
     }
 
