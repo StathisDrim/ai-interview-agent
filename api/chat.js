@@ -1,59 +1,65 @@
+const https = require('https');
+
 module.exports = async (req, res) => {
-    // Τραβάει το κλειδί από το Vercel Environment Variables
-    const API_KEY = process.env.GEMINI_KEY; 
+    // 1. Ρύθμιση Headers για CORS και JSON
+    res.setHeader('Content-Type', 'application/json');
     
     if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Μόνο POST requests επιτρέπονται' });
+        return res.status(405).json({ error: 'Only POST allowed' });
     }
 
+    const API_KEY = process.env.GEMINI_KEY;
     const { question } = req.body;
 
-    // Ο "Εγκέφαλος" του Στάθη - Το System Prompt
+    // 2. Το Βιογραφικό σου (System Prompt)
     const systemInstruction = `
-Είσαι ο Ψηφιακός Στάθης (AI Portfolio Avatar). Απαντάς σε πρώτο πρόσωπο (π.χ. "Εγώ έκανα...", "Δουλεύω στην...").
-ΧΑΡΑΚΤΗΡΑΣ: Επαγγελματίας, σοβαρός αλλά με έξυπνο χιούμορ. Μιλάς συγκεκριμένα, με αυτοπεποίθηση και ειλικρίνεια. Σου αρέσει η τεχνολογία και η συνεχής μάθηση.
+    Είσαι ο Ψηφιακός Στάθης (AI Avatar). Απαντάς σε πρώτο πρόσωπο.
+    ΧΑΡΑΚΤΗΡΑΣ: Σοβαρός, επαγγελματίας, με έξυπνο χιούμορ. Μιλάς συγκεκριμένα.
+    ΣΤΟΙΧΕΙΑ: Γεννημένος 15/12/1992 στο Μαρούσι. 
+    ΕΜΠΕΙΡΙΑ: Warehouse Operations & System Specialist στην AVAX & Roche Bobois (2016-σήμερα). Διαχειρίζεσαι brands όπως Fendi, Ralph Lauren, Roche Bobois.
+    ΕΠΙΤΕΥΓΜΑΤΑ: Μείωση λαθών 20% και αύξηση ταχύτητας 15% μέσω αυτοματισμών ERP/WMS.
+    SKILLS: Python, Java, ERP Configuration, Machine Learning (Stanford Certified), AI Applications (ACTA 2025).
+    ΟΔΗΓΙΑ: Απάντα σύντομα (1-3 προτάσεις) σαν να είσαι σε κλήση.
+    `;
 
-ΠΛΗΡΟΦΟΡΙΕΣ ΓΙΑ ΤΟΝ ΣΤΑΘΗ:
-- Γεννημένος: 15/12/1992. Κατοικία: Μαρούσι, Αθήνα.
-- Εμπειρία (2016-Σήμερα): Warehouse Operations & System Specialist στην AVAX & Roche Bobois. 
-- Επιτεύγματα: Διαχείριση ERP/WMS για premium brands (Fendi, Ralph Lauren, Baccarat κ.α.). Σχεδίασα αλγορίθμους αυτοματισμού που μείωσαν τα λάθη κατά 20% και αύξησαν την ταχύτητα κατά 15%.
-- Προηγούμενη Εμπειρία: Assistant Manager στη Sport Trends (Skechers) και Sales Associate στη Zakcret Sports.
-- Εκπαίδευση: Πληροφορική (2ο ΕΠΑΛ Αμαρουσίου). 
-- Πιστοποιήσεις: AI Applications in Businesses (ACTA 2025), Machine Learning (Stanford/Coursera 2024), Warehouse Management Executive (TÜV NORD).
-- Τεχνικά Skills: Python, Java, ERP/WMS Configuration, Video Editing (DaVinci Resolve, Adobe Premiere, Photoshop).
-- Άλλα: Πιστοποιημένος χειριστής Clark, δίπλωμα οδήγησης, εκπληρωμένες στρατιωτικές υποχρεώσεις.
+    const postData = JSON.stringify({
+        contents: [{ parts: [{ text: `${systemInstruction}\n\nΕρώτηση Χρήστη: ${question}` }] }]
+    });
 
-ΟΔΗΓΙΕΣ ΑΠΑΝΤΗΣΕΩΝ:
-1. Απάντα σύντομα και ουσιαστικά, σαν να μιλάς σε ζωντανή κλήση.
-2. Αν σε ρωτήσουν για την εμπειρία σου, ανάφερε τα premium brands και τα νούμερα βελτιστοποίησης (15% - 20%).
-3. Αν σε ρωτήσουν κάτι άσχετο με τη δουλειά, απάντησε έξυπνα και επανάφερε τη συζήτηση στα επαγγελματικά σου.
-4. Μην απαντάς "σαν AI", απάντησε ως ο Στάθης που ξέρει τη δουλειά του.
-`;
-
-    try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: `${systemInstruction}\n\nΕρώτηση Χρήστη: ${question}` }]
-                }],
-                generationConfig: {
-                    temperature: 0.7,
-                    maxOutputTokens: 200,
-                }
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.candidates && data.candidates[0].content) {
-            const reply = data.candidates[0].content.parts[0].text;
-            res.status(200).json({ reply });
-        } else {
-            res.status(500).json({ error: "Αδυναμία λήψης απάντησης από το AI" });
+    // 3. Προετοιμασία του αιτήματος προς την Google
+    const options = {
+        hostname: 'generativelanguage.googleapis.com',
+        path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData)
         }
-    } catch (error) {
-        res.status(500).json({ error: "Σφάλμα κατά την επικοινωνία με το API" });
-    }
-}
+    };
+
+    // 4. Εκτέλεση του αιτήματος
+    const request = https.request(options, (response) => {
+        let data = '';
+        response.on('data', (chunk) => { data += chunk; });
+        response.on('end', () => {
+            try {
+                const json = JSON.parse(data);
+                if (json.candidates && json.candidates[0].content) {
+                    const reply = json.candidates[0].content.parts[0].text;
+                    res.status(200).json({ reply });
+                } else {
+                    res.status(500).json({ error: "Invalid AI response", details: json });
+                }
+            } catch (e) {
+                res.status(500).json({ error: "Parse error" });
+            }
+        });
+    });
+
+    request.on('error', (e) => {
+        res.status(500).json({ error: "Request failed", message: e.message });
+    });
+
+    request.write(postData);
+    request.end();
+};
