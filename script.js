@@ -31,50 +31,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log("Full API Result:", result); // Αυτό το βλέπεις στο F12
 
             if (response.ok) {
-                // ΕΔΩ ΕΙΝΑΙ Η ΠΑΓΙΔΑ: 
-                // Αν το result είναι string, εμφάνισέ το. Αν είναι array, εμφάνισε το πρώτο.
-                // Αν είναι αντικείμενο με error, εμφάνισε το error.
-                
-                let finalText = JSON.stringify(result); // Μετατρέπουμε ΟΛΗ την απάντηση σε κείμενο για να τη δούμε
-
+                let reply = "";
                 if (Array.isArray(result) && result[0].generated_text) {
-                    finalText = result[0].generated_text;
+                    reply = result[0].generated_text;
                 } else if (result.generated_text) {
-                    finalText = result.generated_text;
+                    reply = result.generated_text;
+                } else {
+                    reply = "Έλαβα απάντηση αλλά η μορφή δεν είναι σωστή.";
                 }
-
-                appendMessage('ai', finalText); 
+                appendMessage('ai', reply);
             } else {
-                appendMessage('ai', "Σφάλμα Server: " + JSON.stringify(result));
+                appendMessage('ai', "Το AI φορτώνει... Ξαναδοκίμασε σε λίγο.");
             }
-     }
+        } catch (error) {
+            console.error("Error:", error);
+            appendMessage('ai', "Σφάλμα σύνδεσης με τον server.");
+        }
+    }
 
     function appendMessage(sender, text) {
         const bubble = document.createElement('div');
+        bubble.className = sender === 'user' ? 'user-bubble' : 'ai-bubble';
         bubble.style.padding = "10px";
-        bubble.style.margin = "8px";
-        bubble.style.borderRadius = "12px";
-        bubble.style.maxWidth = "80%";
-        bubble.style.fontFamily = "sans-serif";
-        
-        if (sender === 'user') {
-            bubble.style.backgroundColor = "#007bff";
-            bubble.style.color = "white";
-            bubble.style.marginLeft = "auto";
-            bubble.innerText = "Εσύ: " + text;
-        } else {
-            bubble.style.backgroundColor = "#e9e9eb";
-            bubble.style.color = "#333";
-            bubble.style.marginRight = "auto";
-            bubble.innerText = "Στάθης: " + text;
-        }
+        bubble.style.margin = "5px";
+        bubble.style.borderRadius = "10px";
+        bubble.style.backgroundColor = sender === 'user' ? '#007bff' : '#eee';
+        bubble.style.color = sender === 'user' ? 'white' : 'black';
+        bubble.innerText = (sender === 'user' ? "Εσύ: " : "Στάθης: ") + text;
         chatLog.appendChild(bubble);
         chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    sendBtn.addEventListener('click', handleSend);
-    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+    if (sendBtn) sendBtn.addEventListener('click', handleSend);
+    if (userInput) {
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    }
 });
