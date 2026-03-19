@@ -16,18 +16,16 @@ export default async function handler(req, res) {
     const HF_TOKEN = process.env.HF_TOKEN;
 
     try {
-        const hfResponse = await fetch("https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct", {
+        // ΑΛΛΑΓΗ ΣΕ MISTRAL (Πιο σταθερό για free tier)
+        const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${HF_TOKEN}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                inputs: req.body.inputs,
-                parameters: { 
-                    max_new_tokens: 150,
-                    return_full_text: false,
-                    wait_for_model: true // Αναγκάζει το AI να ξυπνήσει αν κοιμάται
+                inputs: `Είσαι ο Στάθης, ένας έμπειρος αποθηκάριος. Απάντα σύντομα στα ελληνικά στην ερώτηση: ${req.body.inputs}`,
+                parameters: { max_new_tokens: 100, wait_for_model: true }
                 }
             }),
         });
