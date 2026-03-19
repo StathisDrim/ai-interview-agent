@@ -3,42 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Interview Agent - Στάθης</title>
-    <link rel="stylesheet" href="style.css?v=1.2">
+    <title>AI Interview Agent</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
-    <div class="video-background">
-        <img src="bg.jpg" alt="Background" class="bg-image">
-    </div>
+    <div class="background"></div>
 
-    <div class="glass-container">
+    <div class="container">
         <div id="call-screen" class="call-screen">
-            <div class="avatar-container">
-                <img src="avatar.png" alt="Avatar" class="avatar-image">
+            <div class="avatar">
+                <img src="avatar.png" alt="Avatar">
             </div>
-            <div class="caller-info">
-                <h1>Στάθης - Warehouse Specialist</h1>
-                <p>Εισερχόμενη Κλήση...</p>
-            </div>
-            <div class="call-actions">
-                <button id="accept-btn" class="accept-btn">
-                    <i>📞</i> Αποδοχή
+            <div class="caller-name">Στάθης</div>
+            <div class="status">Εισερχόμενη κλήση...</div>
+            <div class="actions">
+                <button id="accept-btn" class="accept">
+                    <span>📞</span> Αποδοχή
                 </button>
             </div>
         </div>
 
-        <div id="chat-screen" class="chat-screen hidden">
-            <div class="chat-header">
-                <h2>Συνέντευξη με τον Στάθη</h2>
-            </div>
-            <div id="chat-log" class="chat-log">
-                <div class="message ai-message">
-                    <strong>Στάθης:</strong> Γεια σου! Είμαι ο ψηφιακός Στάθης. Παρακαλώ, κάνε μου την πρώτη σου ερώτηση για τη θέση στην αποθήκη.
+        <div id="chat-screen" class="chat-container hidden">
+            <div class="chat-header">Συνέντευξη με τον Στάθη</div>
+            <div id="chat-log" class="chat-messages">
+                <div class="message stathis">
+                    <strong>Στάθης:</strong> Γεια! Είμαι έτοιμος για τη συνέντευξη. Τι θέλεις να με ρωτήσεις;
                 </div>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Πληκτρολογήστε την ερώτησή σας...">
-                <button id="send-btn">Αποστολή</button>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Γράψε εδώ...">
+                <button id="send-btn">Στείλε</button>
             </div>
         </div>
     </div>
