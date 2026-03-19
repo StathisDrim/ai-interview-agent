@@ -31,25 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
+            console.log("Full API Result:", result); // Αυτό το βλέπεις στο F12
 
             if (response.ok) {
-                let reply = "";
-                // Το Mistral επιστρέφει συνήθως [{ generated_text: "..." }]
+                // ΕΔΩ ΕΙΝΑΙ Η ΠΑΓΙΔΑ: 
+                // Αν το result είναι string, εμφάνισέ το. Αν είναι array, εμφάνισε το πρώτο.
+                // Αν είναι αντικείμενο με error, εμφάνισε το error.
+                
+                let finalText = JSON.stringify(result); // Μετατρέπουμε ΟΛΗ την απάντηση σε κείμενο για να τη δούμε
+
                 if (Array.isArray(result) && result[0].generated_text) {
-                    reply = result[0].generated_text;
+                    finalText = result[0].generated_text;
                 } else if (result.generated_text) {
-                    reply = result.generated_text;
-                } else {
-                    reply = "Δεν βρέθηκε απάντηση. Δοκίμασε ξανά.";
+                    finalText = result.generated_text;
                 }
-                appendMessage('ai', reply);
+
+                appendMessage('ai', finalText); 
             } else {
-                appendMessage('ai', "Το AI ετοιμάζεται... Ξαναστείλε σε 5 δευτερόλεπτα!");
+                appendMessage('ai', "Σφάλμα Server: " + JSON.stringify(result));
             }
-        } catch (e) {
-            appendMessage('ai', "Σφάλμα σύνδεσης.");
-        }
-    }
+     }
 
     function appendMessage(sender, text) {
         const bubble = document.createElement('div');
