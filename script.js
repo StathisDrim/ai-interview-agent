@@ -1,5 +1,5 @@
 // Το νέο URL του Vercel που έφτιαξες
-const VERCEL_URL = 'https://ai-interview-agent-sooty.vercel.app/api/chat';
+const VERCEL_URL = 'https://ai-interview-agent-sooty.vercel.app';
 
 document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
