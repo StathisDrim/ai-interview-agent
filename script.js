@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Αποστολή Μηνύματος
+    // Αποστολ Μηνύματος
     async function sendMessage() {
         const text = userInput.value.trim();
         if (!text) return;
