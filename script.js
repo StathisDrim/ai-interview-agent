@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
 
         try {
-            const res = await fetch(VERCEL_URL, {
+            const VERCEL_URL = 'https://ai-interview-agent-sooty.vercel.app/api/chat';
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ inputs: text })
