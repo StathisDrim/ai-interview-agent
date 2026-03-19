@@ -26,7 +26,6 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 inputs: `Είσαι ο Στάθης, ένας έμπειρος αποθηκάριος. Απάντα σύντομα στα ελληνικά στην ερώτηση: ${req.body.inputs}`,
                 parameters: { max_new_tokens: 100, wait_for_model: true }
-                }
             }),
         });
 
