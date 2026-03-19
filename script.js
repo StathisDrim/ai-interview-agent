@@ -22,46 +22,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. ΛΕΙΤΟΥΡΓΙΑ ΑΠΟΣΤΟΛΗΣ ΜΗΝΥΜΑΤΟΣ
-    async function handleSend() {
+async function handleSend() {
         const text = userInput.value.trim();
         if (!text) return;
 
-        // Εμφάνιση μηνύματος χρήστη στο UI
         appendMessage('user', text);
         userInput.value = '';
 
         try {
-            // ΚΛΗΣΗ ΣΤΟ API ΣΟΥ ΣΤΟ VERCEL
             const response = await fetch(VERCEL_API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    inputs: `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nΕίσαι ο Στάθης (Warehouse Specialist). Απάντα σύντομα, φιλικά και επαγγελματικά στα ελληνικά.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n${text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`
-                })
+                body: JSON.stringify({ inputs: text }) // Στέλνουμε μόνο το κείμενο απλά
             });
 
             const result = await response.json();
 
-            // Έλεγχος αν η απάντηση είναι σωστή
             if (response.ok) {
-                // Το Hugging Face επιστρέφει συνήθως έναν πίνακα [ { generated_text: "..." } ]
-                if (result && result[0] && result[0].generated_text) {
-                    appendMessage('ai', result[0].generated_text.trim());
+                // ΔΟΚΙΜΑΖΟΥΜΕ ΟΛΟΥΣ ΤΟΥΣ ΠΙΘΑΝΟΥΣ ΤΡΟΠΟΥΣ ΠΟΥ ΑΠΑΝΤΑΕΙ ΤΟ AI
+                let aiReply = "";
+                if (Array.isArray(result) && result[0].generated_text) {
+                    aiReply = result[0].generated_text;
+                } else if (result.generated_text) {
+                    aiReply = result.generated_text;
                 } else {
-                    appendMessage('ai', "Έλαβα απάντηση αλλά χωρίς κείμενο. Δοκίμασε ξανά.");
+                    aiReply = "Το AI απάντησε, αλλά δεν καταλαβαίνω τη μορφή: " + JSON.stringify(result).substring(0, 50);
                 }
+                
+                // Καθαρίζουμε την απάντηση από τυχόν prompt tags αν εμφανιστούν
+                aiReply = aiReply.replace(/<\|.*?\|>/g, "").trim();
+                appendMessage('ai', aiReply);
+
             } else {
-                // Διαχείριση σφαλμάτων από τον Server (Vercel/HuggingFace)
-                if (result.error && (result.estimated_time || result.error.includes("currently loading"))) {
-                    appendMessage('ai', "Το AI ετοιμάζεται (κάνει boot). Ξαναδοκίμασε σε 10 δευτερόλεπτα...");
+                if (result.error && result.error.includes("loading")) {
+                    appendMessage('ai', "Το AI φορτώνει τις γνώσεις του... Ξαναστείλε σε 10 δευτερόλεπτα!");
                 } else {
-                    appendMessage('ai', `Σφάλμα API (${response.status}): ${result.error || "Άγνωστο πρόβλημα"}`);
+                    appendMessage('ai', "Σφάλμα: " + (result.error || "Πρόβλημα στον server"));
                 }
             }
 
         } catch (error) {
-            console.error("Fetch Error:", error);
-            appendMessage('ai', "Αποτυχία σύνδεσης. Βεβαιώσου ότι έχεις ίντερνετ και το Vercel είναι live.");
+            appendMessage('ai', "Αποτυχία σύνδεσης με τον ψηφιακό Στάθη.");
         }
     }
 
